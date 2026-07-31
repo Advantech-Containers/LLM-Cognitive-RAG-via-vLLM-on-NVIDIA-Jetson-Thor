@@ -1,2 +1,2 @@
-# Edge LLM Cognitive RAG via vLLM on NVIDIA® Jetson Thor™
+# LLM Cognitive RAG via vLLM on NVIDIA® Jetson Thor™
 
