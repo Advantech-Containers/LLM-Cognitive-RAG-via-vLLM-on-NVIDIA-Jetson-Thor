@@ -1,1 +1,1 @@
-# WEDA-Cognitive-RAG-with-vLLM-on-NVIDIA-Jetson-Thor-
+# WEDA Cognitive RAG with vLLM on NVIDIA Jetson Thor™
