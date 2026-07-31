@@ -1,2 +1,2 @@
-# WEDA Edge LLM Cognitive RAG with vLLM on NVIDIA Jetson Thor™
+# LLM Cognitive RAG via vLLM on NVIDIA® Jetson Thor™
 
