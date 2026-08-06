@@ -1,4 +1,4 @@
-model_cache_dir: "/models/huggingface/hub"
+model_cache_dir: "/models/huggingface"
 default_profile: qwen2.5-0.5b-sanity
 profiles:
 
