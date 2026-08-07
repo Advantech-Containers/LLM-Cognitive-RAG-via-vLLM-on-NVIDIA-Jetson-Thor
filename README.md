@@ -93,7 +93,14 @@ Before running the serving stack, ensure your host environment meets the followi
 
 ## 🚀 Quick Start Guide
 
-### 1. Configuration Check
+### 1. Clone the Repository
+Clone the repository to your host machine:
+```bash
+git clone https://github.com/Advantech-Containers/LLM-Cognitive-RAG-via-vLLM-on-NVIDIA-Jetson-Thor.git
+cd LLM-Cognitive-RAG-via-vLLM-on-NVIDIA-Jetson-Thor
+```
+
+### 2. Configuration Check
 Create or update the environment configuration file `.env` in the root of this directory. It must define your Hugging Face credentials and local model cache directories:
 ```bash
 # Hugging Face
@@ -102,9 +109,9 @@ HF_HUB_OFFLINE=1                 # models must already be in HF_CACHE
 HF_CACHE=/home/<username>/.cache/huggingface
 ```
 
-`HF_HUB_OFFLINE=1` means nothing is fetched at serve time — a model that is not already in `HF_CACHE` is a start-up failure, not a slow first run. Download it first (step 2). `HF_TOKEN` is only needed for gated repositories.
+`HF_HUB_OFFLINE=1` means nothing is fetched at serve time — a model that is not already in `HF_CACHE` is a start-up failure, not a slow first run. Download it first (step 3). `HF_TOKEN` is only needed for gated repositories.
 
-### 2. Download and Cache Models
+### 3. Download and Cache Models
 Run the downloader on the host to cache the weight checkpoints. It resolves everything through `config/llm_config.yaml`, so there is no list to edit inside the script:
 
 ```bash
@@ -116,7 +123,7 @@ python3 scripts/download_models.py --all               # every model referenced 
 
 With no flag it fetches only the model served by `default_profile`, which is enough to bring the stack up. Use `--profile` for the one you intend to serve, or `--all` to cache the full catalogue. See [Choosing a model for RAG](#choosing-a-model-for-rag) for which profile to pick — the default is a sanity model, not a RAG model.
 
-### 3. Build & Launch the Serving Infrastructure
+### 4. Build & Launch the Serving Infrastructure
 Launch the serving container:
 Before running the build.sh update the config/llm_config.yaml file model profile for the model you have downloaded above.
 For example: replace default_profile with the model you have downloaded.
@@ -127,7 +134,7 @@ For example: replace default_profile with the model you have downloaded.
 ```
 This builds (or pulls) the container image, provisions the open-webui and vLLM services, and monitors container health until initialization is complete.
 
-### 4. Wait for the Model to Load
+### 5. Wait for the Model to Load
 After launching, the vLLM server needs time to load the model weights into memory. **Wait times vary depending on the model size and parameters** — a 7B-parameter model may take ~2–5 minutes, while larger 70B+ models can take 10–20 minutes or more.
 
 Monitor container status in real-time:
@@ -142,7 +149,7 @@ When the response returns a valid model list with your model ID, the server is r
 
 > **💡 Tip:** If the container shows `unhealthy` or the `/v1/models` endpoint returns an empty list after an extended period, check the container logs with `docker logs weda-edge-llm --tail 100` to diagnose loading issues.
 
-### 5. Verify the Environment
+### 6. Verify the Environment
 Run the built-in verification suite to confirm that the container is fully operational, all packages are correctly installed and synced, and the serving endpoints are healthy:
 ```bash
 ./wise-bench #(run from host in the project directory for complete comprehensive analysis of ready to dev capabilities along with the package and functionalities report)
@@ -182,27 +189,31 @@ This directory contains the following scripts and core files:
 To set up, verify, and benchmark this environment, execute the following steps in sequence:
 
 ```text
- 1. Configure .env File
+ 1. Clone the Repository        ──►  git clone https://github.com/Advantech-Containers/LLM-Cognitive-RAG-via-vLLM-on-NVIDIA-Jetson-Thor.git
+           │                         cd LLM-Cognitive-RAG-via-vLLM-on-NVIDIA-Jetson-Thor
+           ▼
+ 2. Configure .env File
            │
            ▼
- 2. Download Model Checkpoints  ──►  python3 scripts/download_models.py
+ 3. Download Model Checkpoints  ──►  python3 scripts/download_models.py
            │
            ▼
- 3. Launch Serving Container    ──►  ./build.sh --run
+ 4. Launch Serving Container    ──►  ./build.sh --run
            │
            ▼
- 4. Wait for Model to Load      ──►  watch -n 2 docker ps
+ 5. Wait for Model to Load      ──►  watch -n 2 docker ps
            │
            ▼
- 5. Verify Environment          ──►  ./wise-bench(from host for RAG check)
+ 6. Verify Environment          ──►  ./wise-bench(from host for RAG check)
 
 ```
 
-1.  **Configure Environment:** Set paths, tokens, and ports in `.env`.
-2.  **Download Models:** Fetch required checkpoints to the host cache using `scripts/download_models.py`.
-3.  **Start Services:** Run `./build.sh --run` on the host to spawn the container stack.
-4.  **Wait for Model to Load:** Monitor with `watch -n 2 docker ps` until status is `healthy`, then confirm with `curl -s http://localhost:9000/v1/models`. Wait time varies by model size.
-5.  **Verify Environment:** Run `./wise-bench` to verify container packages, CUDA libraries, and endpoint health. Confirms the environment is ready to dev.
+1.  **Clone Repository:** Fetch the codebase and enter the directory.
+2.  **Configure Environment:** Set paths, tokens, and ports in `.env`.
+3.  **Download Models:** Fetch required checkpoints to the host cache using `scripts/download_models.py`.
+4.  **Start Services:** Run `./build.sh --run` on the host to spawn the container stack.
+5.  **Wait for Model to Load:** Monitor with `watch -n 2 docker ps` until status is `healthy`, then confirm with `curl -s http://localhost:9000/v1/models`. Wait time varies by model size.
+6.  **Verify Environment:** Run `./wise-bench` to verify container packages, CUDA libraries, and endpoint health. Confirms the environment is ready to dev.
 ---
 
 ## ⚠️ Important: File Permissions
